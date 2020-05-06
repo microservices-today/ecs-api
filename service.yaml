@@ -91,12 +91,6 @@ Resources:
     Properties:
       LogGroupName: !Sub "${EnvironmentName}-APP_NAME"
       RetentionInDays: 14
-  CloudwatchLogsGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName:
-        Fn::Sub: "ECSLogGroup-${AWS::StackName}"
-      RetentionInDays: 14
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
