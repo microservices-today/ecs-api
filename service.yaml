@@ -1,4 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  This template provisions ECS service/task, ALB, API Gateway (optional), EFS (optional), Scaling Policy, Alarms, and Logging.
+
 Parameters:
   Tag:
     Type: String
@@ -54,6 +58,7 @@ Resources:
               Ref: ContainerLogGroup
             awslogs-region:
               Ref: AWS::Region
+            awslogs-stream-prefix: !GetAtt 'Service.Name'
         PortMappings:
         - ContainerPort: 9000
           HostPort: 0
