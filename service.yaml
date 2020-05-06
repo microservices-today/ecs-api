@@ -58,7 +58,7 @@ Resources:
               Ref: ContainerLogGroup
             awslogs-region:
               Ref: AWS::Region
-            awslogs-stream-prefix: !GetAtt 'Service.Name'
+            awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
         PortMappings:
         - ContainerPort: 9000
           HostPort: 0
