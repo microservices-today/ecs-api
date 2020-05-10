@@ -62,7 +62,6 @@ Resources:
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
         PortMappings:
         - ContainerPort: 9000
-          HostPort: 0
         Environment:
         - Name: XXXAWS_XRAY_DAEMON_ADDRESS
           Value: 'xraydaemon:2000'
