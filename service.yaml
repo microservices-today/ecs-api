@@ -185,6 +185,13 @@ ENVIRONMENT_VARIABLES
           Ref: ECSTG
       Role:
         Ref: ECSServiceRole
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - Fn::ImportValue:
+                Fn::Sub: "${EnvironmentName}-PrivateSubnet1"
+            - Fn::ImportValue:
+                Fn::Sub: "${EnvironmentName}-PrivateSubnet2"
   ApiGateway:
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
