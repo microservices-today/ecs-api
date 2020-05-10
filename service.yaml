@@ -182,8 +182,6 @@ ENVIRONMENT_VARIABLES
         ContainerPort: 9000
         TargetGroupArn:
           Ref: ECSTG
-      Role:
-        Ref: ECSServiceRole
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
