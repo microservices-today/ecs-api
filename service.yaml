@@ -62,6 +62,11 @@ Resources:
         PortMappings:
         - ContainerPort: 9000
           HostPort: 0
+        Links:
+          - xraydaemon
+        Environment:
+        - Name: AWS_XRAY_DAEMON_ADDRESS
+          Value: 'xraydaemon:2000'
         ENVIRONMENT_VARIABLES
   ECSServiceRole:
     Type: AWS::IAM::Role
