@@ -120,12 +120,12 @@ ENVIRONMENT_VARIABLES
       DefaultActions:
       - Type: forward
         TargetGroupArn:
-          Ref: ECSTG
+          Ref: TargetGroup
       LoadBalancerArn:
         Ref: ALB
       Port: '443'
       Protocol: HTTPS
-  ECSTG:
+  TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     DependsOn: ALB
     Properties:
@@ -182,7 +182,7 @@ ENVIRONMENT_VARIABLES
       - ContainerName: APP_NAME
         ContainerPort: 9000
         TargetGroupArn:
-          Ref: ECSTG
+          Ref: TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
@@ -359,7 +359,7 @@ OPEN_API_SPEC
           "Fn::GetAtt": [ ALB, LoadBalancerFullName ]
       - Name: TargetGroup
         Value:
-          "Fn::GetAtt": [ ECSTG, TargetGroupFullName ]
+          "Fn::GetAtt": [ TargetGroup, TargetGroupFullName ]
       ComparisonOperator: LessThanThreshold
       MetricName: HealthyHostCount
   UnhealthyHostAlarm:
@@ -380,7 +380,7 @@ OPEN_API_SPEC
           "Fn::GetAtt": [ ALB, LoadBalancerFullName ]
       - Name: TargetGroup
         Value:
-          "Fn::GetAtt": [ ECSTG, TargetGroupFullName ]
+          "Fn::GetAtt": [ TargetGroup, TargetGroupFullName ]
       ComparisonOperator: GreaterThanOrEqualToThreshold
       MetricName: UnHealthyHostCount
   AlarmNotificationTopic:
