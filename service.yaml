@@ -42,6 +42,7 @@ Resources:
     Properties:
       #The Family name will be used along with ECS_CLUSTER_NAME to prepare the stack name. It should be of Format abb-cdd-sd
       Family: APP_NAME-BUILD_SCOPE
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Name: APP_NAME
         Cpu: ECS_CPU_COUNT
@@ -62,10 +63,8 @@ Resources:
         PortMappings:
         - ContainerPort: 9000
           HostPort: 0
-        Links:
-          - xraydaemon
         Environment:
-        - Name: AWS_XRAY_DAEMON_ADDRESS
+        - Name: XXXAWS_XRAY_DAEMON_ADDRESS
           Value: 'xraydaemon:2000'
 ENVIRONMENT_VARIABLES
   ECSServiceRole:
