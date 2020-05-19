@@ -10,7 +10,7 @@ Parameters:
     Default: IMAGE_TAG
   ContainerPort:
     Type: Number
-    Default: 9000
+    Default: 80
     Description: What port number the application inside the docker container is binding to
   EnvironmentName:
     Type: String
