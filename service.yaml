@@ -10,7 +10,7 @@ Parameters:
     Default: IMAGE_TAG
   ContainerPort:
     Type: Number
-    Default: 80
+    Default: 9000
     Description: What port number the application inside the docker container is binding to
   EnvironmentName:
     Type: String
@@ -140,7 +140,7 @@ ENVIRONMENT_VARIABLES
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       TargetType: ip
-      Port: 80
+      Port: !Ref 'ContainerPort'
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId:
