@@ -8,6 +8,10 @@ Parameters:
     Type: String
     Description: Tag of the Docker Image.
     Default: IMAGE_TAG
+  ContainerPort:
+    Type: Number
+    Default: 9000
+    Description: What port number the application inside the docker container is binding to
   EnvironmentName:
     Type: String
     Description: Name of the Environment.
@@ -61,7 +65,7 @@ Resources:
               Ref: AWS::Region
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
         PortMappings:
-        - ContainerPort: 9000
+        - ContainerPort: !Ref 'ContainerPort'
         Environment:
         - Name: XXXAWS_XRAY_DAEMON_ADDRESS
           Value: 'xraydaemon:2000'
@@ -165,6 +169,9 @@ ENVIRONMENT_VARIABLES
             Resource: '*'
       Roles:
       - Ref: ECSServiceRole
+  # The service. The service is a resource which allows you to run multiple
+  # copies of a type of task, and gather up their logs and metrics, as well
+  # as monitor the number of running tasks and replace any that have crashed
   Service:
     Type: AWS::ECS::Service
     DependsOn:
@@ -176,20 +183,16 @@ ENVIRONMENT_VARIABLES
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-ECSCluster"
       DesiredCount: DESIRED_COUNT
-      TaskDefinition:
-        Ref: TaskDefinition
+      TaskDefinition: !Ref: TaskDefinition
       LoadBalancers:
       - ContainerName: APP_NAME
-        ContainerPort: 9000
-        TargetGroupArn:
-          Ref: TargetGroup
+        ContainerPort: !Ref 'ContainerPort'
+        TargetGroupArn: !Ref: TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
-            - Fn::ImportValue:
-                Fn::Sub: "${EnvironmentName}-PrivateSubnet1"
-            - Fn::ImportValue:
-                Fn::Sub: "${EnvironmentName}-PrivateSubnet2"
+            - Fn::ImportValue: Fn::Sub: "${EnvironmentName}-PrivateSubnet1"
+            - Fn::ImportValue: Fn::Sub: "${EnvironmentName}-PrivateSubnet2"
   ApiGateway:
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
