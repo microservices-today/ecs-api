@@ -180,19 +180,18 @@ ENVIRONMENT_VARIABLES
       - ALBListener
     Properties:
       Cluster:
-        Fn::ImportValue:
-          Fn::Sub: "${EnvironmentName}-ECSCluster"
+        Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
       DesiredCount: DESIRED_COUNT
-      TaskDefinition: !Ref: TaskDefinition
+      TaskDefinition: !Ref 'TaskDefinition'
       LoadBalancers:
       - ContainerName: APP_NAME
         ContainerPort: !Ref 'ContainerPort'
-        TargetGroupArn: !Ref: TargetGroup
+        TargetGroupArn: !Ref 'TargetGroup'
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
-            - Fn::ImportValue: Fn::Sub: "${EnvironmentName}-PrivateSubnet1"
-            - Fn::ImportValue: Fn::Sub: "${EnvironmentName}-PrivateSubnet2"
+            - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
+            - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet2'
   ApiGateway:
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
