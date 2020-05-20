@@ -65,7 +65,7 @@ Resources:
               Ref: AWS::Region
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
         PortMappings:
-        - ContainerPort: !Ref 'ContainerPort'
+          - ContainerPort: !Ref 'ContainerPort'
         Environment:
         - Name: XXXAWS_XRAY_DAEMON_ADDRESS
           Value: 'xraydaemon:2000'
@@ -84,9 +84,7 @@ ENVIRONMENT_VARIABLES
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: ECS Security Group
-      VpcId:
-        Fn::ImportValue:
-           Fn::Sub:  "${EnvironmentName}-VPC"
+      VpcId: Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
       SecurityGroupIngress:
         # Only allow inbound access to ECS from the same VPC
         - IpProtocol: tcp
@@ -107,14 +105,11 @@ ENVIRONMENT_VARIABLES
         - Key: idle_timeout.timeout_seconds
           Value: '30'
       Subnets:
-        - Fn::ImportValue:
-            Fn::Sub: "${EnvironmentName}-PublicSubnet1"
-        - Fn::ImportValue:
-            Fn::Sub: "${EnvironmentName}-PublicSubnet2"
+        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet1'
+        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet2'
       SecurityGroups:
       - Ref: ECSSecurityGroup
-      - Fn::ImportValue:
-          Fn::Sub: "${EnvironmentName}-ECSHostSecurityGroup"
+      - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
   ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     DependsOn: ECSServiceRole
@@ -179,16 +174,17 @@ ENVIRONMENT_VARIABLES
       - ALB
       - ALBListener
     Properties:
-      Cluster:
-        Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
+      Cluster: Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
       DesiredCount: DESIRED_COUNT
       TaskDefinition: !Ref 'TaskDefinition'
       LoadBalancers:
-      - ContainerName: APP_NAME
-        ContainerPort: !Ref 'ContainerPort'
-        TargetGroupArn: !Ref 'TargetGroup'
+        - ContainerName: APP_NAME
+          ContainerPort: !Ref 'ContainerPort'
+          TargetGroupArn: !Ref 'TargetGroup'
       NetworkConfiguration:
         AwsvpcConfiguration:
+          SecurityGroup:
+            - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
           Subnets:
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet2'
