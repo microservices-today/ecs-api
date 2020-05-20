@@ -185,7 +185,7 @@ ENVIRONMENT_VARIABLES
           TargetGroupArn: !Ref 'TargetGroup'
       NetworkConfiguration:
         AwsvpcConfiguration:
-          SecurityGroup:
+          SecurityGroups:
             - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
           Subnets:
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
