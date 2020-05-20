@@ -178,6 +178,7 @@ ENVIRONMENT_VARIABLES
     Properties:
       Cluster:
         Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
+      LaunchType: FARGATE
       DesiredCount: DESIRED_COUNT
       TaskDefinition: !Ref 'TaskDefinition'
       LoadBalancers:
