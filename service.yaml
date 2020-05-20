@@ -133,7 +133,7 @@ ENVIRONMENT_VARIABLES
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     DependsOn: ALB
     Properties:
-      Name: !Sub "${EnvironmentName}-APP_NAME1"
+      Name: !Sub "${EnvironmentName}-APP_NAME"
       HealthCheckIntervalSeconds: 10
       HealthCheckPath: /health
       HealthCheckProtocol: HTTP
