@@ -84,7 +84,9 @@ ENVIRONMENT_VARIABLES
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: ECS Security Group
-      VpcId: Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
+      VpcId:
+        Fn::ImportValue:
+          !Sub '${EnvironmentName}-VPC'
       SecurityGroupIngress:
         # Only allow inbound access to ECS from the same VPC
         - IpProtocol: tcp
@@ -94,7 +96,7 @@ ENVIRONMENT_VARIABLES
   ContainerLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "${EnvironmentName}-APP_NAME"
+      LogGroupName: !Sub '${EnvironmentName}-APP_NAME'
       RetentionInDays: 14
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
