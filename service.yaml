@@ -176,7 +176,8 @@ ENVIRONMENT_VARIABLES
       - ALB
       - ALBListener
     Properties:
-      Cluster: Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
+      Cluster:
+        Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
       DesiredCount: DESIRED_COUNT
       TaskDefinition: !Ref 'TaskDefinition'
       LoadBalancers:
