@@ -39,7 +39,6 @@ Parameters:
 
 Conditions:
   IsApiGatewayNeeded: !Not [ !Equals [ 'S3_SWAGGER_BUCKET_NAME', 'SKIP_API_GATEWAY' ] ]
-  HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
 
 Resources:
   
@@ -81,12 +80,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      ExecutionRoleArn: !Ref 'ECSTaskExecutionRole'
-      TaskRoleArn:
-        Fn::If:
-          - 'HasCustomRole'
-          - !Ref 'Role'
-          - !Ref "AWS::NoValue"
+      ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
       ContainerDefinitions:
       - Name: APP_NAME
         Cpu: ECS_CPU_COUNT
