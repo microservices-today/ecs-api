@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -ex
+
 if [ "$DEPLOY_ENVIRONMENT" = "development" ] || \
    [ "$DEPLOY_ENVIRONMENT" = "staging" ] || \
    [ "$DEPLOY_ENVIRONMENT" = "feature" ] || \
