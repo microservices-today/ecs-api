@@ -68,6 +68,10 @@ Resources:
                 # Allow the ECS tasks to upload logs to CloudWatch
                 - 'logs:CreateLogStream'
                 - 'logs:PutLogEvents'
+
+                # Allow the ECS tasks to write traces to AWS X-Ray
+                - 'xray:PutTraceSegments'
+                - 'xray:PutTelemetryRecords'
               Resource: '*'
 
   # The task definition. This is a simple metadata description of what
