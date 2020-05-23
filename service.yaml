@@ -78,7 +78,6 @@ Resources:
       #The Family name will be used along with ECS_CLUSTER_NAME to prepare the stack name. It should be of Format abb-cdd-sd
       Family: APP_NAME-BUILD_SCOPE
       Cpu: ECS_CPU_COUNT
-      Memory: ECS_MEMORY_RESERVATION_COUNT
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -91,8 +90,7 @@ Resources:
             #- '${AccountId}.dkr.ecr.${Region}.amazonaws.com/xray-daemon'
             #- { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
         Image: "amazon/aws-xray-daemon"
-        Cpu: 32
-        MemoryReservation: 256
+        Cpu: 0
         PortMappings:
           - ContainerPort: 2000
             Protocol: udp
@@ -105,13 +103,12 @@ Resources:
               Ref: AWS::Region
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
       - Name: APP_NAME
-        Cpu: ECS_CPU_COUNT
+        Cpu: 0
         Essential: 'true'
         Image:
           "Fn::Sub":
             - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/${ECSRepositoryName}:TAG'
             - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
-        MemoryReservation: ECS_MEMORY_RESERVATION_COUNT
         LogConfiguration:
           LogDriver: awslogs
           Options:
@@ -123,8 +120,8 @@ Resources:
         PortMappings:
           - ContainerPort: !Ref 'ContainerPort'
         Environment:
-        - Name: XXXAWS_XRAY_DAEMON_ADDRESS
-          Value: 'xraydaemon:2000'
+        - Name: AWS_XRAY_DAEMON_ADDRESS
+          Value: ''
 ENVIRONMENT_VARIABLES
 
   # The service. The service is a resource which allows you to run multiple
