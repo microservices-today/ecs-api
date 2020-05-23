@@ -78,6 +78,7 @@ Resources:
       #The Family name will be used along with ECS_CLUSTER_NAME to prepare the stack name. It should be of Format abb-cdd-sd
       Family: APP_NAME-BUILD_SCOPE
       Cpu: ECS_CPU_COUNT
+      MemoryReservation: ECS_MEMORY_RESERVATION_COUNT
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
