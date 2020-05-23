@@ -92,9 +92,8 @@ Resources:
             - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
         Cpu: 0
         PortMappings:
-          - Protocol: 'udp'
           - ContainerPort: 2000
-          - HostPort: 2000
+            Protocol: udp
         LogConfiguration:
           LogDriver: awslogs
           Options:
