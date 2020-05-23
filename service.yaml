@@ -87,6 +87,8 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
+      # TODO: too much power for the task
+      TaskRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
       ContainerDefinitions:
       - Name: xray-sidecar
         # XXX it is expected that you have xray-daemon in your ECR
