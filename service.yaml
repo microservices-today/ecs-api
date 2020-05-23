@@ -105,6 +105,7 @@ Resources:
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
       - Name: APP_NAME
         Cpu: 0
+        MemoryReservation: ECS_MEMORY_RESERVATION_COUNT
         Essential: 'true'
         Image:
           "Fn::Sub":
