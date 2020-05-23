@@ -84,6 +84,25 @@ Resources:
         - FARGATE
       ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
       ContainerDefinitions:
+      - Name: xray-sidecar
+        # XXX it is expected that you have xray-daemon in your ECR
+        Image:
+          "Fn::Sub":
+            - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/xray-daemon'
+            - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
+        Cpu: 0
+        PortMappings:
+          - Protocol: 'udp'
+          - ContainerPort: 2000
+          - HostPort: 2000
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: ContainerLogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
       - Name: APP_NAME
         Cpu: ECS_CPU_COUNT
         Essential: 'true'
@@ -106,6 +125,33 @@ Resources:
         - Name: XXXAWS_XRAY_DAEMON_ADDRESS
           Value: 'xraydaemon:2000'
 ENVIRONMENT_VARIABLES
+
+  # The service. The service is a resource which allows you to run multiple
+  # copies of a type of task, and gather up their logs and metrics, as well
+  # as monitor the number of running tasks and replace any that have crashed
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - ECSServicePolicy
+      - ALB
+      - ALBListener
+    Properties:
+      Cluster:
+        Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
+      LaunchType: FARGATE
+      DesiredCount: DESIRED_COUNT
+      TaskDefinition: !Ref 'TaskDefinition'
+      LoadBalancers:
+        - ContainerName: APP_NAME
+          ContainerPort: !Ref 'ContainerPort'
+          TargetGroupArn: !Ref 'TargetGroup'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
+          Subnets:
+            - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
+            - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet2'
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -202,33 +248,7 @@ ENVIRONMENT_VARIABLES
             Resource: '*'
       Roles:
       - Ref: ECSServiceRole
-  # The service. The service is a resource which allows you to run multiple
-  # copies of a type of task, and gather up their logs and metrics, as well
-  # as monitor the number of running tasks and replace any that have crashed
-  Service:
-    Type: AWS::ECS::Service
-    DependsOn:
-      - ECSServicePolicy
-      - ALB
-      - ALBListener
-    Properties:
-      Cluster:
-        Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
-      LaunchType: FARGATE
-      DesiredCount: DESIRED_COUNT
-      TaskDefinition: !Ref 'TaskDefinition'
-      LoadBalancers:
-        - ContainerName: APP_NAME
-          ContainerPort: !Ref 'ContainerPort'
-          TargetGroupArn: !Ref 'TargetGroup'
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          SecurityGroups:
-            - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
-          Subnets:
-            - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
-            - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet2'
-  ApiGateway:
+ ApiGateway:
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
     Properties:
