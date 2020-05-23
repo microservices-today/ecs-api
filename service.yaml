@@ -32,7 +32,7 @@ Parameters:
     Type: String
     Description: Email address to notify when an API activity has triggered an alarm
     Default: EMAIL
-  ECSRespositoryName:
+  ECSRepositoryName:
     Type: String
     Description: 'ECS Repository Name'
     Default: ECS_REPOSITORY_NAME
@@ -108,7 +108,7 @@ Resources:
         Essential: 'true'
         Image:
           "Fn::Sub":
-            - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/${ECSRespositoryName}:TAG'
+            - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/${ECSRepositoryName}:TAG'
             - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
         MemoryReservation: ECS_MEMORY_RESERVATION_COUNT
         LogConfiguration:
@@ -152,6 +152,7 @@ ENVIRONMENT_VARIABLES
           Subnets:
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet2'
+
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -248,7 +249,7 @@ ENVIRONMENT_VARIABLES
             Resource: '*'
       Roles:
       - Ref: ECSServiceRole
- ApiGateway:
+  ApiGateway:
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
     Properties:
