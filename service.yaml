@@ -90,7 +90,8 @@ Resources:
           "Fn::Sub":
             - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/xray-daemon'
             - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
-        Cpu: 0
+        Cpu: 32
+        MemoryReservation: 256
         PortMappings:
           - ContainerPort: 2000
             Protocol: udp
