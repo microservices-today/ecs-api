@@ -91,7 +91,7 @@ Resources:
       TaskRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
       ContainerDefinitions:
       - Name: xray-sidecar
-        # XXX it is expected that you have xray-daemon in your ECR
+        # TODO: it is expected that you have xray-daemon in your ECR
         #Image:
           #"Fn::Sub":
             #- '${AccountId}.dkr.ecr.${Region}.amazonaws.com/xray-daemon'
@@ -105,10 +105,8 @@ Resources:
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group:
-              Ref: ContainerLogGroup
-            awslogs-region:
-              Ref: AWS::Region
+            awslogs-group: !Ref: ContainerLogGroup
+            awslogs-region: !Ref: AWS::Region
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
       - Name: APP_NAME
         Cpu: 0
@@ -121,16 +119,12 @@ Resources:
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group:
-              Ref: ContainerLogGroup
-            awslogs-region:
-              Ref: AWS::Region
+            awslogs-group: !Ref: ContainerLogGroup
+            awslogs-region: !Ref: AWS::Region
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
         PortMappings:
           - ContainerPort: !Ref 'ContainerPort'
         Environment:
-        - Name: AWS_XRAY_DAEMON_ADDRESS
-          Value: ''
 ENVIRONMENT_VARIABLES
 
   # The service. The service is a resource which allows you to run multiple
