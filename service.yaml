@@ -43,6 +43,8 @@ Conditions:
 Resources:
   
   # TODO: It should be externalized, maybe with ECS cluster or network creation
+  # Otherwise, it may cause slowness in CloudFormation pipeline.
+  #
   # This is a role which is used by the ECS tasks themselves.
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
@@ -154,6 +156,8 @@ ENVIRONMENT_VARIABLES
           Subnets:
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet1'
             - Fn::ImportValue: !Sub '${EnvironmentName}-PrivateSubnet2'
+      # TODO: Looks like it is not necessary for Fargate?
+      # Role: !Ref 'ECSServiceRole'
 
   ECSServiceRole:
     Type: AWS::IAM::Role
