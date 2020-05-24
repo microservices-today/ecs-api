@@ -99,7 +99,7 @@ Resources:
           #"Fn::Sub":
             #- '${AccountId}.dkr.ecr.${Region}.amazonaws.com/xray-daemon'
             #- { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
-        Image: "amazon/aws-xray-daemon"
+        Image: "amazon/aws-xray-daemon:3.2.0"
         Cpu: 0
         MemoryReservation: 256
         PortMappings:
