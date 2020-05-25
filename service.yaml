@@ -86,10 +86,6 @@ Resources:
       Family: APP_NAME-BUILD_SCOPE
       Cpu: ECS_CPU_COUNT
       Memory: ECS_MEMORY_RESERVATION_COUNT
-      Ulimits:
-        - Name: nofile
-          SoftLimit: 2048
-          HardLimit: 8192
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -115,6 +111,10 @@ Resources:
           "Fn::Sub":
             - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/${ECSRepositoryName}:TAG'
             - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
+        Ulimits:
+          - Name: nofile
+            SoftLimit: 2048
+            HardLimit: 8192
         LogConfiguration:
           LogDriver: awslogs
           Options:
