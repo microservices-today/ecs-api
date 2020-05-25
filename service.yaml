@@ -86,10 +86,10 @@ Resources:
       Family: APP_NAME-BUILD_SCOPE
       Cpu: ECS_CPU_COUNT
       Memory: ECS_MEMORY_RESERVATION_COUNT
-      Ulimit:
-        Name: nofile
-        SoftLimit: 2048
-        HardLimit: 8192
+      Ulimits:
+        - Name: nofile
+          SoftLimit: 2048
+          HardLimit: 8192
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
