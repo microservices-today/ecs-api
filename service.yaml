@@ -86,7 +86,7 @@ Resources:
       Family: APP_NAME-BUILD_SCOPE
       Cpu: ECS_CPU_COUNT
       Memory: ECS_MEMORY_RESERVATION_COUNT
-      Ulimits:
+      Ulimit:
         Name: nofile
         SoftLimit: 2048
         HardLimit: 8192
