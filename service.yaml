@@ -42,41 +42,6 @@ Conditions:
 
 Resources:
   
-  # TODO: It should be externalized, maybe with ECS cluster or network creation
-  # Otherwise, it may cause slowness in CloudFormation pipeline.
-  #
-  # This is a role which is used by the ECS tasks themselves.
-  ECSTaskExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: [ecs-tasks.amazonaws.com]
-          Action: ['sts:AssumeRole']
-      Path: /
-      Policies:
-        - PolicyName: AmazonECSTaskExecutionRolePolicy
-          PolicyDocument:
-            Statement:
-            - Effect: Allow
-              Action:
-                # Allow the ECS Tasks to download images from ECR
-                - 'ecr:GetAuthorizationToken'
-                - 'ecr:BatchCheckLayerAvailability'
-                - 'ecr:GetDownloadUrlForLayer'
-                - 'ecr:BatchGetImage'
-
-                # Allow the ECS tasks to upload logs to CloudWatch
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-
-                # Allow the ECS tasks to write traces to AWS X-Ray
-                - 'xray:PutTraceSegments'
-                - 'xray:PutTelemetryRecords'
-              Resource: '*'
-
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
   TaskDefinition:
@@ -89,9 +54,10 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      ExecutionRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
+      ExecutionRoleArn: 'Fn::ImportValue': !Sub '${EnvironmentName}-ECSTaskExecutionRoleArn'
+      #!GetAtt 'ECSTaskExecutionRole.Arn'
       # TODO: too much power for the task
-      TaskRoleArn: !GetAtt 'ECSTaskExecutionRole.Arn'
+      TaskRoleArn: 'Fn::ImportValue': !Sub '${EnvironmentName}-ECSTaskExecutionRoleArn'
       ContainerDefinitions:
       - Name: xray-sidecar
         # TODO: it is expected that you have xray-daemon in your ECR
