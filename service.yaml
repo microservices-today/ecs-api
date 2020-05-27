@@ -54,10 +54,11 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      ExecutionRoleArn: 'Fn::ImportValue': !Sub '${EnvironmentName}-ECSTaskExecutionRoleArn'
-      #!GetAtt 'ECSTaskExecutionRole.Arn'
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub '${EnvironmentName}-ECSTaskExecutionRoleArn'
       # TODO: too much power for the task
-      TaskRoleArn: 'Fn::ImportValue': !Sub '${EnvironmentName}-ECSTaskExecutionRoleArn'
+      TaskRoleArn:
+        Fn::ImportValue: !Sub '${EnvironmentName}-ECSTaskExecutionRoleArn'
       ContainerDefinitions:
       - Name: xray-sidecar
         # TODO: it is expected that you have xray-daemon in your ECR
