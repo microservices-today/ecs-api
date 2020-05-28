@@ -36,6 +36,12 @@ Parameters:
     Type: String
     Description: 'ECS Repository Name'
     Default: ECS_REPOSITORY_NAME
+  Path:
+    Type: String
+    Default: "*"
+    Description: A path on the public load balancer that this service
+                 should be connected to. Use * to send all load balancer
+                 traffic to this service
 
 Conditions:
   IsApiGatewayNeeded: !Not [ !Equals [ 'S3_SWAGGER_BUCKET_NAME', 'SKIP_API_GATEWAY' ] ]
