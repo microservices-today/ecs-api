@@ -122,6 +122,45 @@ ENVIRONMENT_VARIABLES
       # TODO: Looks like it is not necessary for Fargate?
       # Role: !Ref 'ECSServiceRole'
 
+
+  # A target group. This is used for keeping track of all the tasks, and
+  # what IP addresses / port numbers they have. You can query it yourself,
+  # to use the addresses yourself, but most often this target group is just
+  # connected to an application load balancer, or network load balancer, so
+  # it can automatically distribute traffic across all the targets.
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetType: ip
+      Name: !Ref 'ServiceName'
+      Port: !Ref 'ContainerPort'
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId:
+        Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
+
+  # Create a rule on the load balancer for routing traffic to the target group
+  LoadBalancerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref 'TargetGroup'
+          Type: 'forward'
+      Conditions:
+        - Field: path-pattern
+          Values: [!Ref 'Path']
+      ListenerArn:
+        Fn::ImportValue: !Sub '${EnvironmentName}-PublicListener'
+      # The priority for the routing rule added to the load balancer.
+      # This only applies if your have multiple services which have been
+      # assigned to different paths on the load balancer
+      Priority: 1
+
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -193,8 +232,7 @@ ENVIRONMENT_VARIABLES
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId:
-        Fn::ImportValue:
-           Fn::Sub: "${EnvironmentName}-VPC"
+        Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
   Route53:
     Type: AWS::Route53::RecordSetGroup
     Properties:
