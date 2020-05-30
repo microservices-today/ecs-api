@@ -157,7 +157,8 @@ ENVIRONMENT_VARIABLES
           Type: 'forward'
       Conditions:
         - Field: host-header
-          Values: !Sub 'APP_NAME.HOSTED_ZONE'
+            Values:
+            - !Sub 'APP_NAME.HOSTED_ZONE'
       ListenerArn:
         Fn::ImportValue: !Sub '${EnvironmentName}-PublicListener'
       # The priority for the routing rule added to the load balancer.
