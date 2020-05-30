@@ -106,8 +106,6 @@ ENVIRONMENT_VARIABLES
     Type: AWS::ECS::Service
     DependsOn:
       - ECSServicePolicy
-      - ALB
-      - ALBListener
     Properties:
       Cluster:
         Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
@@ -430,7 +428,7 @@ OPEN_API_SPEC
       Dimensions:
       - Name: LoadBalancer
         Value:
-          "Fn::GetAtt": [ ALB, LoadBalancerFullName ]
+          Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerFullName'
       - Name: TargetGroup
         Value:
           "Fn::GetAtt": [ TargetGroup, TargetGroupFullName ]
@@ -451,7 +449,7 @@ OPEN_API_SPEC
       Dimensions:
       - Name: LoadBalancer
         Value:
-          "Fn::GetAtt": [ ALB, LoadBalancerFullName ]
+          Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerFullName'
       - Name: TargetGroup
         Value:
           "Fn::GetAtt": [ TargetGroup, TargetGroupFullName ]
@@ -474,4 +472,4 @@ Outputs:
       Ref: Service
   AppALBDNS:
     Value:
-      "Fn::GetAtt": [ ALB, DNSName ]
+      Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerDNSName'
