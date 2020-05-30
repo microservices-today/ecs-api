@@ -141,7 +141,7 @@ ENVIRONMENT_VARIABLES
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       TargetType: ip
-      Name: !Ref 'ServiceName'
+      Name: !Sub '${EnvironmentName}-APP_NAME'
       Port: !Ref 'ContainerPort'
       Protocol: HTTP
       UnhealthyThresholdCount: 2
