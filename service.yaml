@@ -158,8 +158,8 @@ ENVIRONMENT_VARIABLES
         - TargetGroupArn: !Ref 'TargetGroup'
           Type: 'forward'
       Conditions:
-        - Field: path-pattern
-          Values: [!Ref 'Path']
+        - Field: host-header
+          Values: !Sub 'APP_NAME.HOSTED_ZONE'
       ListenerArn:
         Fn::ImportValue: !Sub '${EnvironmentName}-PublicListener'
       # The priority for the routing rule added to the load balancer.
@@ -195,50 +195,50 @@ ENVIRONMENT_VARIABLES
     Properties:
       LogGroupName: !Sub '${EnvironmentName}-APP_NAME'
       RetentionInDays: 14
-  ALB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: !Sub "${EnvironmentName}-APP_NAME"
-      Scheme: internet-facing
-      LoadBalancerAttributes:
-        - Key: idle_timeout.timeout_seconds
-          Value: '30'
-      Subnets:
-        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet1'
-        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet2'
-      SecurityGroups:
-      - Ref: ECSSecurityGroup
-      - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
-  ALBListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    DependsOn: ECSServiceRole
-    Properties:
-      Certificates:
-      - CertificateArn: CERTIFICATE_ARN
-      DefaultActions:
-      - Type: forward
-        TargetGroupArn:
-          Ref: TargetGroup
-      LoadBalancerArn:
-        Ref: ALB
-      Port: '443'
-      Protocol: HTTPS
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    DependsOn: ALB
-    Properties:
-      Name: !Sub "${EnvironmentName}-APP_NAME"
-      HealthCheckIntervalSeconds: 10
-      HealthCheckPath: /health
-      HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      TargetType: ip
-      Port: !Ref 'ContainerPort'
-      Protocol: HTTP
-      UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
+#  ALB:
+#    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+#    Properties:
+#      Name: !Sub "${EnvironmentName}-APP_NAME"
+#      Scheme: internet-facing
+#      LoadBalancerAttributes:
+#        - Key: idle_timeout.timeout_seconds
+#          Value: '30'
+#      Subnets:
+#        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet1'
+#        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet2'
+#      SecurityGroups:
+#      - Ref: ECSSecurityGroup
+#      - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
+#  ALBListener:
+#    Type: AWS::ElasticLoadBalancingV2::Listener
+#    DependsOn: ECSServiceRole
+#    Properties:
+#      Certificates:
+#      - CertificateArn: CERTIFICATE_ARN
+#      DefaultActions:
+#      - Type: forward
+#        TargetGroupArn:
+#          Ref: TargetGroup
+#      LoadBalancerArn:
+#        Ref: ALB
+#      Port: '443'
+#      Protocol: HTTPS
+#  TargetGroup:
+#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+#    DependsOn: ALB
+#    Properties:
+#      Name: !Sub "${EnvironmentName}-APP_NAME"
+#      HealthCheckIntervalSeconds: 10
+#      HealthCheckPath: /health
+#      HealthCheckProtocol: HTTP
+#      HealthCheckTimeoutSeconds: 5
+#      HealthyThresholdCount: 2
+#      TargetType: ip
+#      Port: !Ref 'ContainerPort'
+#      Protocol: HTTP
+#      UnhealthyThresholdCount: 2
+#      VpcId:
+#        Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
   Route53:
     Type: AWS::Route53::RecordSetGroup
     Properties:
@@ -248,8 +248,10 @@ ENVIRONMENT_VARIABLES
       - Name: APP_NAME.HOSTED_ZONE
         Type: A
         AliasTarget:
-          HostedZoneId: !GetAtt ALB.CanonicalHostedZoneID
-          DNSName: !GetAtt ALB.DNSName
+          HostedZoneId:
+            Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerHostedZoneID'
+          DNSName:
+            Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerDNSName'
   ECSServicePolicy:
     Type: "AWS::IAM::Policy"
     Properties:
