@@ -155,11 +155,10 @@ ENVIRONMENT_VARIABLES
       Actions:
         - TargetGroupArn: !Ref 'TargetGroup'
           Type: 'forward'
-      # TODO: Remove the hardcoded HOSTED_ZONE
       Conditions:
         - Field: host-header
           Values:
-          - 'APP_NAME.onekyat.ninja'
+          - 'APP_NAME.DOMAIN_NAME'
       ListenerArn:
         Fn::ImportValue: !Sub '${EnvironmentName}-PublicListener'
       # The priority for the routing rule added to the load balancer.
