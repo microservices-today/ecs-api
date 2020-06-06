@@ -189,55 +189,13 @@ ENVIRONMENT_VARIABLES
           FromPort: '443'
           ToPort: '443'
           CidrIp: 0.0.0.0/0
+
   ContainerLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub '${EnvironmentName}-APP_NAME'
       RetentionInDays: 14
-#  ALB:
-#    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-#    Properties:
-#      Name: !Sub "${EnvironmentName}-APP_NAME"
-#      Scheme: internet-facing
-#      LoadBalancerAttributes:
-#        - Key: idle_timeout.timeout_seconds
-#          Value: '30'
-#      Subnets:
-#        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet1'
-#        - Fn::ImportValue: !Sub '${EnvironmentName}-PublicSubnet2'
-#      SecurityGroups:
-#      - Ref: ECSSecurityGroup
-#      - Fn::ImportValue: !Sub '${EnvironmentName}-ECSHostSecurityGroup'
-#  ALBListener:
-#    Type: AWS::ElasticLoadBalancingV2::Listener
-#    DependsOn: ECSServiceRole
-#    Properties:
-#      Certificates:
-#      - CertificateArn: CERTIFICATE_ARN
-#      DefaultActions:
-#      - Type: forward
-#        TargetGroupArn:
-#          Ref: TargetGroup
-#      LoadBalancerArn:
-#        Ref: ALB
-#      Port: '443'
-#      Protocol: HTTPS
-#  TargetGroup:
-#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-#    DependsOn: ALB
-#    Properties:
-#      Name: !Sub "${EnvironmentName}-APP_NAME"
-#      HealthCheckIntervalSeconds: 10
-#      HealthCheckPath: /health
-#      HealthCheckProtocol: HTTP
-#      HealthCheckTimeoutSeconds: 5
-#      HealthyThresholdCount: 2
-#      TargetType: ip
-#      Port: !Ref 'ContainerPort'
-#      Protocol: HTTP
-#      UnhealthyThresholdCount: 2
-#      VpcId:
-#        Fn::ImportValue: !Sub '${EnvironmentName}-VPC'
+
   Route53:
     Type: AWS::Route53::RecordSetGroup
     Properties:
@@ -251,6 +209,7 @@ ENVIRONMENT_VARIABLES
             Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerHostedZoneID'
           DNSName:
             Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerDNSName'
+
   ECSServicePolicy:
     Type: "AWS::IAM::Policy"
     Properties:
@@ -263,6 +222,7 @@ ENVIRONMENT_VARIABLES
             Resource: '*'
       Roles:
       - Ref: ECSServiceRole
+
   ApiGateway:
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
@@ -270,6 +230,7 @@ ENVIRONMENT_VARIABLES
       Name: GITHUB_REPO
       Body:
 OPEN_API_SPEC
+
   ScalableTargetRole: # based on http://docs.aws.amazon.com/AmazonECS/latest/developerguide/autoscale_IAM_role.html
     Type: 'AWS::IAM::Role'
     Properties:
