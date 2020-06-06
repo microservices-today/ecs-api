@@ -28,6 +28,12 @@ Parameters:
     Default: 2
     ConstraintDescription: 'Must be >= 1'
     MinValue: 1
+  ELBListenerPriority:
+    Type: Number
+    Default: ELB_LISTENER_PRIORITY
+    MinValue: 1
+    MaxValue: 50000
+    Description: The priority for the routing rule added to the load balancer. This only applies if you have multiple services on single load balancer.
   Email:
     Type: String
     Description: Email address to notify when an API activity has triggered an alarm
@@ -158,7 +164,7 @@ ENVIRONMENT_VARIABLES
       # The priority for the routing rule added to the load balancer.
       # This only applies if your have multiple services which have been
       # assigned to different paths on the load balancer
-      Priority: ELB_LISTENER_PRIORITY
+      Priority: !Ref 'ELBListenerPriority'
 
   ECSServiceRole:
     Type: AWS::IAM::Role
