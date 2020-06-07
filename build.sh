@@ -68,8 +68,9 @@ if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
   sed -i "s@ECS_REPOSITORY_NAME@$ECR_NAME@g" ecs/service.yaml
   sed -i "s@ECS_CPU_COUNT@$ECS_CPU_COUNT@g" ecs/service.yaml
   sed -i "s@ECS_MEMORY_RESERVATION_COUNT@$ECS_MEMORY_RESERVATION_COUNT@g" ecs/service.yaml
+  sed -i "s@ELB_LISTENER_PRIORITY@$ELB_LISTENER_PRIORITY@g" ecs/service.yaml
   sed -i "s@HOSTED_ZONE@$HOSTED_ZONE@g" ecs/service.yaml
-  sed -i "s@CERTIFICATE_ARN@$CERTIFICATE_ARN@g" ecs/service.yaml
+  sed -i "s@DOMAIN_NAME@`echo $HOSTED_ZONE | sed s'/.$//'`@g" ecs/service.yaml
   sed -i "s@DESIRED_COUNT@$DESIRED_COUNT@g" ecs/service.yaml
 
   if [ "$S3_SWAGGER_BUCKET_NAME" != "" ] ; then
