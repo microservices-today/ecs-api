@@ -36,7 +36,6 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     "name": "%s - (Release Notes)","body": "%s",
     "draft": false,"prerelease": false}' $RELEASE_PLAN $RELEASE_PLAN "$(cat commits)")
     echo $API_JSON
-    #API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases?access_token=${GITHUB_TOKEN}"
     API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases"
     echo $API_URI
     RELEASE_STATUS=$(curl -H 'Authorization: token '${GITHUB_TOKEN}'' --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
