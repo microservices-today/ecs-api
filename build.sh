@@ -34,17 +34,36 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     git push origin master
     # Delete released branch (e.g. 2.0.4) and let a candidate (e.g. 2.0.4-candidate-f3056cc) to be promoted
     # This case is only for support of multiple pipelines
-    git push --delete origin ${RELEASE_PLAN} | true
-    API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master",
-    "name": "%s - (Release Notes)","body": "%s",
-    "draft": false,"prerelease": false}' $RELEASE_PLAN $RELEASE_PLAN "$(cat commits)")
-    echo $API_JSON
-    API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases?access_token=${GITHUB_TOKEN}"
+    #git push --delete origin ${RELEASE_PLAN} | true
+    API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/${RELEASE_PLAN}?access_token=${GITHUB_TOKEN}"
     echo $API_URI
-    RELEASE_STATUS=$(curl --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
-    if [ $RELEASE_STATUS != 201 ]; then
-        echo "Release Failed with status:${RELEASE_STATUS}"
-        exit 1;
+    RELEASE_STATUS=$(curl --write-out %{http_code} --silent --output /dev/null "$API_URI")
+    if [ $RELEASE_STATUS != 200 ]; then
+        echo "Release not found with status:${RELEASE_STATUS}. Creating the release."
+        API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases?access_token=${GITHUB_TOKEN}"
+        API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master",
+        "name": "%s - (Release Notes)","body": "%s",
+        "draft": false,"prerelease": false}' $RELEASE_PLAN $RELEASE_PLAN "$(cat commits)")
+        echo $API_JSON
+        echo $API_URI
+        RELEASE_STATUS=$(curl --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
+        if [ $RELEASE_STATUS != 201 ]; then
+            echo "Release Failed with status:${RELEASE_STATUS}"
+            exit 1;
+        fi
+    elif
+        echo "Release found with status:${RELEASE_STATUS}. Updating the release."
+        API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/${RELEASE_PLAN}?access_token=${GITHUB_TOKEN}"
+        API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master",
+        "name": "%s - (Release Notes)","body": "%s",
+        "draft": false,"prerelease": false}' $RELEASE_PLAN $RELEASE_PLAN "$(cat commits)")
+        echo $API_JSON
+        echo $API_URI
+        RELEASE_STATUS=$(curl --request PATCH --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
+        if [ $RELEASE_STATUS != 200 ]; then
+            echo "Release Failed to update with status:${RELEASE_STATUS}"
+            exit 1;
+        fi
     fi
     cd ..
 else
