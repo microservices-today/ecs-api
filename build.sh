@@ -32,6 +32,9 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     git checkout master
     git merge staging
     git push origin master
+    # Delete released branch (e.g. 2.0.4) and let a candidate (e.g. 2.0.4-candidate-f3056cc) to be promoted
+    # This case is only for support of multiple pipelines
+    git push --delete origin ${RELEASE_PLAN} | true
     API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master",
     "name": "%s - (Release Notes)","body": "%s",
     "draft": false,"prerelease": false}' $RELEASE_PLAN $RELEASE_PLAN "$(cat commits)")
