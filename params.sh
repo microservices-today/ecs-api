@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -ex
+
 KEYS=`awk -F"=" '{print $1}' .env.sample`
 printf "\n        Environment:\n" > env.yaml
 for KEY in $KEYS
