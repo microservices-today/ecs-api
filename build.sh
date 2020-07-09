@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -ex
 
@@ -38,7 +38,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/${RELEASE_PLAN}?access_token=${GITHUB_TOKEN}"
     echo $API_URI
     RELEASE_STATUS=$(curl --write-out %{http_code} --silent --output /dev/null "$API_URI")
-    if [ $RELEASE_STATUS == 200 ]; then
+    if [ "${RELEASE_STATUS}" -eq 200 ]; then
         echo "Release found with status:${RELEASE_STATUS}. Deleting the release."
         API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/${RELEASE_PLAN}?access_token=${GITHUB_TOKEN}"
         API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master",
@@ -47,7 +47,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
         echo $API_JSON
         echo $API_URI
         RELEASE_STATUS=$(curl --request DELETE --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
-        if [ $RELEASE_STATUS != 204 ]; then
+        if [ "${RELEASE_STATUS}" -ne 204 ]; then
             echo "Release Failed to update with status:${RELEASE_STATUS}"
             exit 1;
         fi
@@ -60,7 +60,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     echo $API_JSON
     echo $API_URI
     RELEASE_STATUS=$(curl --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
-    if [ $RELEASE_STATUS != 201 ]; then
+    if [ ${RELEASE_STATUS} -ne 201 ]; then
         echo "Release Failed with status:${RELEASE_STATUS}"
         exit 1;
     fi
