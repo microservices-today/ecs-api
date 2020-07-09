@@ -51,7 +51,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
             echo "Release Failed with status:${RELEASE_STATUS}"
             exit 1;
         fi
-    elif
+    else
         echo "Release found with status:${RELEASE_STATUS}. Updating the release."
         API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/${RELEASE_PLAN}?access_token=${GITHUB_TOKEN}"
         API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master",
