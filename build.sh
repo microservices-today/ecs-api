@@ -32,7 +32,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     git checkout master
     git merge staging
     git push origin master
-    sudo yum install -y jq
+    sudo apt-get install -y jq
     # Delete released branch (e.g. 2.0.4) and let a candidate (e.g. 2.0.4-candidate-f3056cc) to be promoted
     # This case is only for support of multiple pipelines
     #git push --delete origin ${RELEASE_PLAN} | true
