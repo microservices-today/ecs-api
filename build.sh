@@ -53,11 +53,11 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
         if [ "${RELEASE_STATUS}" -ne 204 ]; then
             echo "Failed to delete a release with status:${RELEASE_STATUS}."
             exit 1;
-        elif
+        else
             echo "Release with tag ${RELEASE_PLAN} and ID ${RELEASE_ID} is deleted."
         fi
 
-    elif
+    else
         echo "Release not found with tag ${RELEASE_PLAN} and status:${RELEASE_STATUS}."
     fi
 
@@ -71,6 +71,8 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     if [ ${RELEASE_STATUS} -ne 201 ]; then
         echo "Release Failed with status:${RELEASE_STATUS}"
         exit 1;
+    else
+        echo "Release creation is completed successfully"
     fi
 
     cd ..
