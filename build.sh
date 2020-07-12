@@ -35,7 +35,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     # TODO(kamol): Remove it, this distro (ubuntu) is different from our default one (Amazon linux)
     # https://github.com/microservices-today/ecs-cicd/blob/266abc5be50e8e6168186c7a01293b4aff36c315/pipeline.yaml#L391
     # Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
-    sudo yum install -y jq
+    yum install -y jq
 
     # Delete released branch (e.g. 2.0.4) and let a candidate (e.g. 2.0.4-candidate-f3056cc) to be promoted
     # This case is only to support multiple pipelines
