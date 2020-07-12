@@ -33,8 +33,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     git merge staging
     git push origin master
 
-    python3 --version | true
-    sudo add-apt-repository universe
+    # TODO: Remove it, this distro (ubuntu) is different from our default one (Amazon linux)
     sudo apt-get update
     sudo apt-get install -y jq
 
