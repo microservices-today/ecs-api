@@ -88,7 +88,7 @@ else
     git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/${GITHUB_REPO}
     cd ${GITHUB_REPO}
     git checkout staging
-    STAGE_TAG=$(git tag -l --sort=-committerdate '*candidate*' | head -n 1)
+    STAGE_TAG=$(git tag -l --sort=-v:refname | head -n 1)
     TAG=$(curl https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/latest?access_token=${GITHUB_TOKEN} | grep tag_name | grep -Eo "([0-9]\.*)+")
     echo $STAGE_TAG > ../stage.tag
     echo $TAG > ../prod.tag
