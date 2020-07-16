@@ -81,6 +81,7 @@ else
     sudo apt-get update
     sudo apt-get install -y software-properties-common python-software-properties
     sudo add-apt-repository ppa:git-core/ppa
+    sudo apt-get update 
     sudo apt-get install -y git
     git --version
     GITHUB_TOKEN=${GITHUB_TOKEN}
