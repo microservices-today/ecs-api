@@ -78,7 +78,6 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     cd ..
 else
     echo "Entering Production Build"
-    sudo add-apt-repository ppa:git-core/ppa
     sudo apt-get update
     sudo apt-get install git
     git --version
