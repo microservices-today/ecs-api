@@ -79,9 +79,9 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
 else
     echo "Entering Production Build"
     sudo apt-get update
-    sudo apt-get install software-properties-common python-software-properties
+    sudo apt-get install -y software-properties-common python-software-properties
     sudo add-apt-repository ppa:git-core/ppa
-    sudo apt-get install git
+    sudo apt-get install -y git
     git --version
     GITHUB_TOKEN=${GITHUB_TOKEN}
     git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/${GITHUB_REPO}
