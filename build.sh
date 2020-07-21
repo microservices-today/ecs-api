@@ -6,16 +6,18 @@ APP_NAME=`echo ${GITHUB_REPO} | sed 's/_/-/g'`
 APP_NAME=`echo ${APP_NAME} | sed 's/-//g'`
 APP_NAME=`echo ${APP_NAME} | cut -c1-15`
 
-echo -n $(date +%s) | sed "s/.*:\([[:xdigit:]]\{7\}\).*/\1/" > build.id
+# prints Epoch time e.g. 1595330840
+date +%s > build.id
+
 if [ "$DEPLOY_ENVIRONMENT" = "development" ] || \
    [ "$DEPLOY_ENVIRONMENT" = "feature" ] || \
    [ "$DEPLOY_ENVIRONMENT" = "hotfix" ]; then
-    echo -n "$TAG_NAME-$BUILD_SCOPE-$(cat ./build.id)" > docker.tag
-    docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$ECS_REGION.amazonaws.com/$ECR_NAME:$(cat docker.tag) .
+    echo "$TAG_NAME-$BUILD_SCOPE-$(cat ./build.id)" > docker.tag
+    docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$ECS_REGION.amazonaws.com/$ECR_NAME:"$(cat docker.tag)" .
     TAG=$(cat docker.tag)
 elif [ "$DEPLOY_ENVIRONMENT" = "staging" ] ; then
-    echo -n "${RELEASE_PLAN}-$BUILD_SCOPE-$(cat ./build.id)" > docker.tag
-    docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$ECS_REGION.amazonaws.com/$ECR_NAME:$(cat docker.tag) .
+    echo "${RELEASE_PLAN}-$BUILD_SCOPE-$(cat ./build.id)" > docker.tag
+    docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$ECS_REGION.amazonaws.com/$ECR_NAME:"$(cat docker.tag)" .
     TAG=$(cat docker.tag)
 elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     GITHUB_TOKEN=${GITHUB_TOKEN}
@@ -26,7 +28,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     git checkout staging
     echo "$(git log `git describe --tags --abbrev=0`..HEAD --pretty=format:"<br>- %s%b<br>")" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/<br>/g' | tr -d '\r' | sed "s/\"/'/g" > ./commits
     cat ./commits
-    git tag $(cat ../docker.tag)
+    git tag "$(cat ../docker.tag)"
     git push --tags
     git checkout master
     git merge staging
@@ -67,7 +69,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     "name": "%s - (Release Notes)","body": "%s",
     "draft": false,"prerelease": false}' $RELEASE_PLAN $RELEASE_PLAN "$(cat commits)")
     RELEASE_STATUS=$(curl -H 'Authorization: token '${GITHUB_TOKEN}'' --write-out %{http_code} --silent --output /dev/null --data "$API_JSON" "$API_URI")
-    if [ ${RELEASE_STATUS} -ne 201 ]; then
+    if [ "${RELEASE_STATUS}" -ne 201 ]; then
         echo "Release Failed with status:${RELEASE_STATUS}"
         exit 1;
     else
@@ -79,12 +81,12 @@ else
     echo "Entering Production Build"
     GITHUB_TOKEN=${GITHUB_TOKEN}
     git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_USER}/${GITHUB_REPO}
-    cd ${GITHUB_REPO}
+    cd "${GITHUB_REPO}"
     git checkout staging
     STAGE_TAG=$(git describe --tags --abbrev=0 --match "*candidate*")
     TAG=$(curl -H 'Authorization: token '${GITHUB_TOKEN}'' https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/latest | grep tag_name | grep -Eo "([0-9]\.*)+")
-    echo $STAGE_TAG > ../stage.tag
-    echo $TAG > ../prod.tag
+    echo "${STAGE_TAG}" > ../stage.tag
+    echo "${TAG}" > ../prod.tag
     cat ../stage.tag
     cat ../prod.tag
     cd ..
