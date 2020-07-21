@@ -112,7 +112,7 @@ if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
     sed -i "s@{{APP_NAME}}@$APP_NAME@g" swagger.yaml
     sed -i "s@{{DOMAIN_NAME}}@`echo $HOSTED_ZONE | sed s'/.$//'`@g" swagger.yaml
     sed -i "s@{{API_HOSTNAME}}@$API_HOSTNAME@g" swagger.yaml
-    cat swagger.yaml | sed 's/^/        /' > _swagger.yaml
+    sed 's/^/        /' swagger.yaml > _swagger.yaml
     perl -i -pe 's/OPEN_API_SPEC/`cat _swagger.yaml`/e' ecs/service.yaml
     aws s3 cp swagger.yaml s3://$S3_SWAGGER_BUCKET_NAME/$GITHUB_REPO.yaml
   else
