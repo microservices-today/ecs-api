@@ -3,7 +3,7 @@
 This template provisions ECS service/task, ALB, API Gateway (optional), EFS (optional),
 Scaling Policy, Alarms, and Logging for your app.
 
-The dependency between components:
+## Dependency between components
 
 [ecs-iac](https://github.com/microservices-today/ecs-iac) ->
 [ecs-cicd](https://github.com/microservices-today/ecs-cicd) ->
