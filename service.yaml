@@ -1,7 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  This template provisions ECS service/task, ALB, API Gateway (optional), EFS (optional), Scaling Policy, Alarms, and Logging.
+  This template provisions ECS service/task, ALB, API Gateway (optional), EFS (optional),
+  Scaling Policy, Alarms, and Logging.
 
 Parameters:
   Tag:
@@ -33,7 +34,9 @@ Parameters:
     Default: ELB_LISTENER_PRIORITY
     MinValue: 1
     MaxValue: 50000
-    Description: The priority for the routing rule added to the load balancer. This only applies if you have multiple services on single load balancer.
+    Description: >
+      The priority for the routing rule added to the load balancer.
+      This only applies if you have multiple services on single load balancer.
   Email:
     Type: String
     Description: Email address to notify when an API activity has triggered an alarm
@@ -47,13 +50,17 @@ Conditions:
   IsApiGatewayNeeded: !Not [ !Equals [ 'S3_SWAGGER_BUCKET_NAME', 'SKIP_API_GATEWAY' ] ]
 
 Resources:
-  
+
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      #The Family name will be used along with ECS_CLUSTER_NAME to prepare the stack name. It should be of Format abb-cdd-sd
+      Tags:
+        - Key: CloudFormation
+          Value: true
+      # The Family name will be used along with ECS_CLUSTER_NAME to prepare the stack name.
+      # It should be of Format abb-cdd-sd
       Family: APP_NAME-BUILD_SCOPE
       Cpu: ECS_CPU_COUNT
       Memory: ECS_MEMORY_RESERVATION_COUNT
@@ -107,6 +114,9 @@ ENVIRONMENT_VARIABLES
     DependsOn:
       - ECSServicePolicy
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       Cluster:
         Fn::ImportValue: !Sub '${EnvironmentName}-ECSCluster'
       LaunchType: FARGATE
@@ -135,6 +145,9 @@ ENVIRONMENT_VARIABLES
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       HealthCheckIntervalSeconds: 6
       HealthCheckPath: /health
       HealthCheckProtocol: HTTP
@@ -169,6 +182,9 @@ ENVIRONMENT_VARIABLES
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       AssumeRolePolicyDocument:
         Statement:
         - Effect: Allow
@@ -176,9 +192,13 @@ ENVIRONMENT_VARIABLES
             Service: [ecs.amazonaws.com]
           Action: ['sts:AssumeRole']
       Path: /
+
   ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       GroupDescription: ECS Security Group
       VpcId:
         Fn::ImportValue:
@@ -211,7 +231,7 @@ ENVIRONMENT_VARIABLES
             Fn::ImportValue: !Sub '${EnvironmentName}-PublicLoadBalancerDNSName'
 
   ECSServicePolicy:
-    Type: "AWS::IAM::Policy"
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: "ecs-service"
       PolicyDocument:
@@ -227,13 +247,20 @@ ENVIRONMENT_VARIABLES
     Type: AWS::ApiGateway::RestApi
     Condition: IsApiGatewayNeeded
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       Name: GITHUB_REPO
       Body:
 OPEN_API_SPEC
 
-  ScalableTargetRole: # based on http://docs.aws.amazon.com/AmazonECS/latest/developerguide/autoscale_IAM_role.html
-    Type: 'AWS::IAM::Role'
+  # based on http://docs.aws.amazon.com/AmazonECS/latest/developerguide/autoscale_IAM_role.html
+  ScalableTargetRole:
+    Type: AWS::IAM::Role
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -260,8 +287,9 @@ OPEN_API_SPEC
             Action:
             - 'cloudwatch:DescribeAlarms'
             Resource: '*'
+
   ScalableTarget:
-    Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MaxCapacity: !Ref ServiceMaxCapacity
       MinCapacity: !Ref ServiceMinCapacity
@@ -273,8 +301,9 @@ OPEN_API_SPEC
       RoleARN: !GetAtt 'ScalableTargetRole.Arn'
       ScalableDimension: 'ecs:service:DesiredCount'
       ServiceNamespace: ecs
+
   ScaleUpPolicy:
-    Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
       PolicyName: !Sub '${AWS::StackName}-scale-up'
       PolicyType: StepScaling
@@ -286,8 +315,9 @@ OPEN_API_SPEC
         StepAdjustments:
         - MetricIntervalLowerBound: 0
           ScalingAdjustment: 25
+
   ScaleDownPolicy:
-    Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
       PolicyName: !Sub '${AWS::StackName}-scale-down'
       PolicyType: StepScaling
@@ -299,8 +329,9 @@ OPEN_API_SPEC
         StepAdjustments:
         - MetricIntervalUpperBound: 0
           ScalingAdjustment: -25
+
   CPUUtilizationHighAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
+    Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: 'Service is running out of CPU'
       Namespace: 'AWS/ECS'
@@ -318,8 +349,9 @@ OPEN_API_SPEC
       Threshold: 80
       AlarmActions:
       - !Ref ScaleUpPolicy
+
   CPUUtilizationLowAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
+    Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: 'Service is wasting CPU'
       Namespace: 'AWS/ECS'
@@ -337,6 +369,7 @@ OPEN_API_SPEC
       Threshold: 20
       AlarmActions:
       - !Ref ScaleDownPolicy
+
   MemoryUtilizationHighAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -356,6 +389,7 @@ OPEN_API_SPEC
       Threshold: 80
       AlarmActions:
       - !Ref ScaleUpPolicy
+
   MemoryUtilizationLowAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -375,6 +409,7 @@ OPEN_API_SPEC
       Threshold: 20
       AlarmActions:
       - !Ref ScaleDownPolicy
+
   HealthyHostAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -396,6 +431,7 @@ OPEN_API_SPEC
           "Fn::GetAtt": [ TargetGroup, TargetGroupFullName ]
       ComparisonOperator: LessThanThreshold
       MetricName: HealthyHostCount
+
   UnhealthyHostAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -417,10 +453,15 @@ OPEN_API_SPEC
           "Fn::GetAtt": [ TargetGroup, TargetGroupFullName ]
       ComparisonOperator: GreaterThanOrEqualToThreshold
       MetricName: UnHealthyHostCount
+
   AlarmNotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
       TopicName: !Sub 'APP_NAME-topic-${EnvironmentName}'
+
   AlarmNotificationSubscription:
     Type: AWS::SNS::Subscription
     Properties:
@@ -428,6 +469,7 @@ OPEN_API_SPEC
       Protocol: email
       TopicArn:
         Ref: AlarmNotificationTopic
+
 Outputs:
   ecsservice:
     Value:
