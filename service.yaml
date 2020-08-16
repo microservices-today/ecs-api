@@ -87,10 +87,7 @@ Resources:
             awslogs-stream-prefix: !Sub "${EnvironmentName}-APP_NAME"
       - Name: APP_NAME
         Essential: 'true'
-        Image:
-          "Fn::Sub":
-            - '${AccountId}.dkr.ecr.${Region}.amazonaws.com/${ECSRepositoryName}:TAG'
-            - { AccountId: { "Ref" : "AWS::AccountId" }, Region: { "Ref" : "AWS::Region" }}
+        Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECSRepositoryName}:TAG'
         Ulimits:
           - Name: nofile
             SoftLimit: 2048
