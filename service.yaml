@@ -240,16 +240,11 @@ ENVIRONMENT_VARIABLES
       Roles:
       - Ref: ECSServiceRole
 
-  ApiGateway:
-    Type: AWS::ApiGateway::RestApi
+  StackApiGateway:
+    Type: AWS::CloudFormation::Stack
     Condition: IsApiGatewayNeeded
-    Properties:
-      Tags:
-        - Key: CloudFormation
-          Value: true
-      Name: GITHUB_REPO
-      Body:
-OPEN_API_SPEC
+      Properties:
+        TemplateURL: "https://S3_SWAGGER_BUCKET_NAME.s3-ECS_REGION.amazonaws.com/GITHUB_REPO-gateway.yaml"
 
   # based on http://docs.aws.amazon.com/AmazonECS/latest/developerguide/autoscale_IAM_role.html
   ScalableTargetRole:

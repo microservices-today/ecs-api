@@ -108,16 +108,18 @@ if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
 
   if [ "$S3_SWAGGER_BUCKET_NAME" != "" ] ; then
     sed -i "s@S3_SWAGGER_BUCKET_NAME@$S3_SWAGGER_BUCKET_NAME@g" ecs/service.yaml
+    sed -i "s@ECS_RIGION@$ECS_REGION@g" ecs/service.yaml
     sed -i "s@GITHUB_REPO@$GITHUB_REPO@g" ecs/service.yaml
+    sed -i "s@GITHUB_REPO@$GITHUB_REPO@g" ecs/gateway.yaml
     sed -i "s@{{APP_NAME}}@$APP_NAME@g" swagger.yaml
     sed -i "s@{{DOMAIN_NAME}}@`echo $HOSTED_ZONE | sed s'/.$//'`@g" swagger.yaml
     sed -i "s@{{API_HOSTNAME}}@$API_HOSTNAME@g" swagger.yaml
     sed 's/^/        /' swagger.yaml > _swagger.yaml
-    perl -i -pe 's/OPEN_API_SPEC/`cat _swagger.yaml`/e' ecs/service.yaml
+    perl -i -pe 's/OPEN_API_SPEC/`cat _swagger.yaml`/e' ecs/gateway.yaml
     aws s3 cp swagger.yaml s3://$S3_SWAGGER_BUCKET_NAME/$GITHUB_REPO.yaml
+    aws s3 cp gateway.yaml s3://$S3_SWAGGER_BUCKET_NAME/$GITHUB_REPO-gateway.yaml
   else
     sed -i "s@S3_SWAGGER_BUCKET_NAME@SKIP_API_GATEWAY@g" ecs/service.yaml
-    sed -i "s@OPEN_API_SPEC@        SKIP_API_GATEWAY@g" ecs/service.yaml
   fi
 
   . ecs/params.sh
