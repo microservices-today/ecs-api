@@ -108,7 +108,7 @@ if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
 
   if [ "$S3_SWAGGER_BUCKET_NAME" != "" ] ; then
     sed -i "s@S3_SWAGGER_BUCKET_NAME@$S3_SWAGGER_BUCKET_NAME@g" ecs/service.yaml
-    sed -i "s@ECS_RIGION@$ECS_REGION@g" ecs/service.yaml
+    sed -i "s@ECS_REGION@$ECS_REGION@g" ecs/service.yaml
     sed -i "s@GITHUB_REPO@$GITHUB_REPO@g" ecs/service.yaml
     sed -i "s@GITHUB_REPO@$GITHUB_REPO@g" ecs/gateway.yaml
     sed -i "s@{{APP_NAME}}@$APP_NAME@g" swagger.yaml
