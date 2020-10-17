@@ -243,8 +243,8 @@ ENVIRONMENT_VARIABLES
   StackApiGateway:
     Type: AWS::CloudFormation::Stack
     Condition: IsApiGatewayNeeded
-      Properties:
-        TemplateURL: https://S3_SWAGGER_BUCKET_NAME.s3-ECS_REGION.amazonaws.com/GITHUB_REPO-gateway.yaml
+    Properties:
+      TemplateURL: https://S3_SWAGGER_BUCKET_NAME.s3-ECS_REGION.amazonaws.com/GITHUB_REPO-gateway.yaml
 
   # based on http://docs.aws.amazon.com/AmazonECS/latest/developerguide/autoscale_IAM_role.html
   ScalableTargetRole:
