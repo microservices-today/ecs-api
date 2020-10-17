@@ -117,7 +117,7 @@ if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
     sed 's/^/        /' swagger.yaml > _swagger.yaml
     perl -i -pe 's/OPEN_API_SPEC/`cat _swagger.yaml`/e' ecs/gateway.yaml
     aws s3 cp swagger.yaml s3://$S3_SWAGGER_BUCKET_NAME/$GITHUB_REPO.yaml
-    aws s3 cp gateway.yaml s3://$S3_SWAGGER_BUCKET_NAME/$GITHUB_REPO-gateway.yaml
+    aws s3 cp ecs/gateway.yaml s3://$S3_SWAGGER_BUCKET_NAME/$GITHUB_REPO-gateway.yaml
   else
     sed -i "s@S3_SWAGGER_BUCKET_NAME@SKIP_API_GATEWAY@g" ecs/service.yaml
   fi
