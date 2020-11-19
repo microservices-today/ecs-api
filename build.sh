@@ -9,12 +9,6 @@ APP_NAME=`echo ${APP_NAME} | cut -c1-15`
 # prints Epoch time e.g. 1595330840
 date +%s > build.id
 
-# Docker.com authentication to solve API rate limit issue
-# https://www.docker.com/increase-rate-limits?utm_source=docker&utm_medium=web%20referral&utm_campaign=pull%20limits%20home%20page&utm_budget=
-DOCKERHUB_USER=$(aws ssm get-parameters --name "/${ENVIRONMENT_NAME}/DOCKERHUB_USER" --with-decryption --query Parameters[0].Value --output text)
-DOCKERHUB_TOKEN=$(aws ssm get-parameters --name "/${ENVIRONMENT_NAME}/DOCKERHUB_TOKEN" --with-decryption --query Parameters[0].Value --output text)
-echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
-
 if [ "$DEPLOY_ENVIRONMENT" = "development" ] || \
    [ "$DEPLOY_ENVIRONMENT" = "feature" ] || \
    [ "$DEPLOY_ENVIRONMENT" = "hotfix" ]; then
@@ -99,6 +93,13 @@ else
 fi
 
 if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
+
+  # Docker.com authentication to solve API rate limit issue
+  # https://www.docker.com/increase-rate-limits?utm_source=docker&utm_medium=web%20referral&utm_campaign=pull%20limits%20home%20page&utm_budget=
+  DOCKERHUB_USER=$(aws ssm get-parameters --name "/${ENVIRONMENT_NAME}/DOCKERHUB_USER" --with-decryption --query Parameters[0].Value --output text)
+  DOCKERHUB_TOKEN=$(aws ssm get-parameters --name "/${ENVIRONMENT_NAME}/DOCKERHUB_TOKEN" --with-decryption --query Parameters[0].Value --output text)
+  echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+
   sed -i "s@APP_NAME@$APP_NAME@g" ecs/service.yaml
   sed -i "s@TAG@$TAG@g" ecs/service.yaml
   sed -i "s#EMAIL#$EMAIL#g" ecs/service.yaml
