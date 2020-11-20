@@ -2,9 +2,9 @@
 
 set -ex
 
-APP_NAME=`echo ${GITHUB_REPO} | sed 's/_/-/g'`
-APP_NAME=`echo ${APP_NAME} | sed 's/-//g'`
-APP_NAME=`echo ${APP_NAME} | cut -c1-15`
+APP_NAME=$(echo "${GITHUB_REPO}" | sed 's/_/-/g')
+APP_NAME=$(echo "${APP_NAME}" | sed 's/-//g')
+APP_NAME=$(echo "${APP_NAME}" | cut -c1-15)
 
 if [ "$DEPLOY_ENVIRONMENT" != "release" ] ; then
   # Docker.com authentication to solve API rate limit issue
