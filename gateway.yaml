@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  This template provisions API Gateway's RestApi from Swagger.yaml.
+  (If Swagger.yaml and $S3_SWAGGER_BUCKET_NAME parameter of ecs-cicd are specified).
+Resources:
+  ApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Tags:
+        - Key: CloudFormation
+          Value: true
+      Name: GITHUB_REPO
+      Body:
+OPEN_API_SPEC
