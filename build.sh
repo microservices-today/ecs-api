@@ -51,7 +51,7 @@ elif [ "$DEPLOY_ENVIRONMENT" = "release" ] ; then
     # This case is only to support multiple pipelines
     # Get a release by tag name (https://docs.github.com/en/rest/reference/repos#get-a-release-by-tag-nametags)
     API_URI="https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/tags/${RELEASE_PLAN}"
-    RELEASE_STATUS=$(curl --H 'Authorization: token '${GITHUB_TOKEN}'' --write-out %{http_code} --silent --output get_release_by_tag.txt "$API_URI")
+    RELEASE_STATUS=$(curl -H 'Authorization: token '${GITHUB_TOKEN}'' --write-out %{http_code} --silent --output get_release_by_tag.txt "$API_URI")
     if [ "${RELEASE_STATUS}" -eq 200 ]; then
 
         # Delete a release (https://docs.github.com/en/rest/reference/repos#delete-a-release)
